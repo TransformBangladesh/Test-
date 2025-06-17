@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MODEL CONFIGURATION ---
     // API keys are directly embedded as per user's instruction.
     const GEMINI_API_KEY = "AIzaSyCGkTeb_Yjh7uDiwNvHSDHV7kTRkEJ2b78";
-    const OPENROUTER_API_KEY = "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";
+    const OPENROUTER_API_KEY = "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";
 
     const MODEL_CONFIGS = {
         "Gemma 3 (Recommended)": { 
