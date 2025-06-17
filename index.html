@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBD Chat</title>
+    
+    <!-- External Libraries & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app" class="relative h-full w-full animate-fade-in flex">
+        
+        <!-- Sidebar -->
+        <aside id="main-sidebar" class="fixed top-0 left-0 z-40 w-80 h-full bg-[var(--sidebar-bg)] border-r border-[var(--border-color)] p-6 flex flex-col gap-y-8 transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-[var(--text-color)]">TBD Chat</h1>
+                <button id="sidebar-close-button" class="p-1 rounded-full text-[var(--text-color)] hover:bg-[var(--button-hover-bg)] md:hidden">
+                    <!-- Icon set by JS -->
+                </button>
+            </div>
+            
+            <nav class="space-y-6">
+                <div class="space-y-2">
+                    <label for="class-select" class="text-sm font-medium text-[var(--subtle-text-color)]">Class</label>
+                    <select id="class-select" class="w-full bg-[var(--button-bg)] border border-[var(--border-color)] rounded-md px-3 py-2 text-sm text-[var(--text-color)] focus:outline-none focus:ring-2 focus:ring-[var(--send-button-bg)] cursor-pointer"></select>
+                </div>
+
+                <div id="subject-container" class="space-y-2 hidden">
+                    <label for="subject-select" class="text-sm font-medium text-[var(--subtle-text-color)]">Subjects</label>
+                    <select id="subject-select" class="w-full bg-[var(--button-bg)] border border-[var(--border-color)] rounded-md px-3 py-2 text-sm text-[var(--text-color)] focus:outline-none focus:ring-2 focus:ring-[var(--send-button-bg)] cursor-pointer"></select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="model-select" class="text-sm font-medium text-[var(--subtle-text-color)]">Choose Model</label>
+                    <select id="model-select" class="w-full bg-[var(--button-bg)] border border-[var(--border-color)] rounded-md px-3 py-2 text-sm text-[var(--text-color)] focus:outline-none focus:ring-2 focus:ring-[var(--send-button-bg)] cursor-pointer"></select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-[var(--subtle-text-color)]">Theme</label>
+                    <div class="flex items-center justify-between p-2 bg-[var(--button-bg)] border border-[var(--border-color)] rounded-md">
+                        <span id="theme-label" class="text-[var(--text-color)] font-medium text-sm ml-1"></span>
+                        <button id="theme-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--bg-color)] focus:ring-[var(--accent-color)]" style="background-color: var(--border-color);">
+                            <span class="sr-only">Toggle theme</span>
+                            <span id="theme-toggle-knob" class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
+        <!-- Main Chat Area -->
+        <div id="main-content" class="h-full w-full md:ml-80 flex flex-col">
+            <header class="bg-transparent px-4 sm:px-6 py-3 flex items-center justify-between z-10 flex-shrink-0 border-b border-[var(--border-color)]">
+                <div class="flex items-center gap-2">
+                    <button id="menu-toggle" class="p-2 rounded-full text-[var(--text-color)] hover:bg-[var(--button-hover-bg)] md:hidden">
+                        <!-- Icon set by JS -->
+                    </button>
+                    <h2 class="text-xl font-bold text-[var(--text-color)]">Chat</h2>
+                </div>
+                <button id="restart-chat-button" title="Restart Chat" class="p-2 rounded-full text-[var(--text-color)] hover:bg-[var(--button-hover-bg)] hover:text-[var(--danger-color)] transition-all">
+                     <!-- Icon set by JS -->
+                </button>
+            </header>
+
+            <main id="chat-window" class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 flex flex-col"></main>
+
+            <footer class="bg-transparent px-4 md:px-6 py-4 flex-shrink-0 z-10">
+                <div class="max-w-4xl mx-auto w-full"> 
+                    <div class="relative flex items-end bg-[var(--button-bg)] rounded-xl shadow-md ring-1 ring-inset ring-[var(--border-color)] focus-within:ring-2 focus-within:ring-[var(--send-button-bg)] transition-all">
+                        <textarea id="message-input" class="w-full bg-transparent pl-4 pr-14 py-3 resize-none focus:outline-none text-[var(--text-color)] max-h-48" placeholder="Type your question here..." rows="1"></textarea>
+                        <button id="send-button" class="absolute right-2.5 bottom-2.5 p-2 bg-[var(--send-button-bg)] rounded-lg text-white hover:bg-[var(--send-button-hover-bg)] disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 active:scale-95 transform transition-all">
+                            <svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.342 1.342l14-7a1 1 0 000-1.788l-14-7z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        
+            <div id="bottom-decoration" class="absolute bottom-0 left-0 right-0 h-[100px] md:h-[150px] w-full pointer-events-none z-0 overflow-hidden">
+                <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" class="absolute bottom-0" preserveAspectRatio="none"><path fill="#065f46" fill-opacity="1" d="M0,224L40,213.3C80,203,160,181,240,186.7C320,192,400,224,480,213.3C560,203,640,149,720,144C800,139,880,181,960,192C1040,203,1120,181,1200,165.3C1280,149,1360,139,1400,133.3L1440,128L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z" style="transition: fill 0.3s ease;"></path></svg>
+            </div>
+        </div>
+
+        <div id="error-banner" class="fixed top-20 right-4 p-4 rounded-lg shadow-lg bg-[var(--danger-color)] text-white z-50 hidden transition-opacity duration-300" role="alert"></div>
+    </div>
+
+    <!-- Main Application Script -->
+    <script src="script.js"></script>
+</body>
+</html>
